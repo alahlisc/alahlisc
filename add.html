@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إدارة المستأجرين - نادي الأهلي طرابلس</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Tajawal', sans-serif; }
+    .container { max-width: 1200px; margin-top: 20px; }
+    .card { border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .form-label { font-weight: bold; }
+    .btn-primary { background-color: #007bff; border: none; }
+    .btn-primary:hover { background-color: #0056b3; }
+    .btn-danger { background-color: #dc3545; }
+    .table { border-radius: 8px; overflow: hidden; }
+    .table th { background-color: #007bff; color: white; }
+    .modal-content { border-radius: 10px; }
+    .alert-dismissible { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1050; }
+  </style>
+  <!-- Google Fonts for Arabic -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mb-4">إدارة المستأجرين - نادي الأهلي طرابلس</h1>
+
+    <!-- Alert for notifications -->
+    <div id="alerts"></div>
+
+    <!-- Tabs for Tenants and Extras -->
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tenants-tab" data-bs-toggle="tab" data-bs-target="#tenants" type="button" role="tab">المستأجرين</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="extras-tab" data-bs-toggle="tab" data-bs-target="#extras" type="button" role="tab">الإضافات</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+      <!-- Tenants Tab -->
+      <div class="tab-pane fade show active" id="tenants" role="tabpanel">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h3 class="card-title">إضافة/تعديل مستأجر</h3>
+            <form id="tenantForm">
+              <input type="hidden" id="tenant_id">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="name" class="form-label">اسم المستأجر</label>
+                  <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="phase" class="form-label">المرحلة</label>
+                  <select class="form-select" id="phase" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="floor" class="form-label">الدور</label>
+                  <select class="form-select" id="floor" required>
+                    <option value="0">أرضي</option>
+                    <option value="1">أول</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="shop_number" class="form-label">رقم المحل</label>
+                  <input type="text" class="form-control" id="shop_number" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="rent_amount" class="form-label">الإيجار</label>
+                  <input type="number" class="form-control" id="rent_amount" step="0.01" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="contract_advance" class="form-label">مقدم العقد</label>
+                  <input type="number" class="form-control" id="contract_advance" step="0.01">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="development_value" class="form-label">قيمة التطوير</label>
+                  <input type="number" class="form-control" id="development_value" step="0.01">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="last_payment_date" class="form-label">تاريخ آخر سداد</label>
+                  <input type="date" class="form-control" id="last_payment_date">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="remaining_balance" class="form-label">الباقي</label>
+                  <input type="number" class="form-control" id="remaining_balance" step="0.01">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="contract_start_date" class="form-label">تاريخ بداية العقد</label>
+                  <input type="date" class="form-control" id="contract_start_date">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="contract_end_date" class="form-label">تاريخ نهاية العقد</label>
+                  <input type="date" class="form-control" id="contract_end_date">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="notes" class="form-label">ملاحظات</label>
+                  <textarea class="form-control" id="notes" rows="3"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="paid_amount" class="form-label">القيمة المدفوعة</label>
+                  <input type="number" class="form-control" id="paid_amount" step="0.01">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="receipt_number" class="form-label">رقم الإيصال</label>
+                  <input type="text" class="form-control" id="receipt_number">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="id_number" class="form-label">إثبات الهوية</label>
+                  <input type="text" class="form-control" id="id_number">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="phone_number" class="form-label">رقم الهاتف</label>
+                  <input type="text" class="form-control" id="phone_number">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="status" class="form-label">الحالة</label>
+                  <select class="form-select" id="status" required>
+                    <option value="complete">مكتمل</option>
+                    <option value="not_completed">غير مكتمل</option>
+                    <option value="legal_review">مراجعة قانونية</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">حفظ</button>
+              <button type="button" class="btn btn-secondary" onclick="resetTenantForm()">إلغاء</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card mt-4">
+          <div class="card-body">
+            <h3 class="card-title">قائمة المستأجرين</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>اسم المستأجر</th>
+                  <th>المرحلة</th>
+                  <th>الدور</th>
+                  <th>رقم المحل</th>
+                  <th>الإيجار</th>
+                  <th>الحالة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="tenantsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extras Tab -->
+      <div class="tab-pane fade" id="extras" role="tabpanel">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h3 class="card-title">إضافة/تعديل إضافة</h3>
+            <form id="extraForm">
+              <input type="hidden" id="extra_id">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="extra_name" class="form-label">اسم المستأجر</label>
+                  <input type="text" class="form-control" id="extra_name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_phase" class="form-label">المرحلة</label>
+                  <select class="form-select" id="extra_phase" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_floor" class="form-label">الدور</label>
+                  <select class="form-select" id="extra_floor" required>
+                    <option value="0">أرضي</option>
+                    <option value="1">أول</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_shop_number" class="form-label">رقم المحل</label>
+                  <input type="text" class="form-control" id="extra_shop_number" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_rent_amount" class="form-label">الإيجار</label>
+                  <input type="number" class="form-control" id="extra_rent_amount" step="0.01" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_type" class="form-label">النوع</label>
+                  <select class="form-select" id="extra_type" required>
+                    <option value="مقهى">مقهى</option>
+                    <option value="كشك">كشك</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_last_payment_date" class="form-label">تاريخ آخر سداد</label>
+                  <input type="date" class="form-control" id="extra_last_payment_date">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_paid_amount" class="form-label">القيمة المدفوعة</label>
+                  <input type="number" class="form-control" id="extra_paid_amount" step="0.01">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_receipt_number" class="form-label">رقم الإيصال</label>
+                  <input type="text" class="form-control" id="extra_receipt_number">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_id_number" class="form-label">إثبات الهوية</label>
+                  <input type="text" class="form-control" id="extra_id_number">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_phone_number" class="form-label">رقم الهاتف</label>
+                  <input type="text" class="form-control" id="extra_phone_number">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="extra_status" class="form-label">الحالة</label>
+                  <select class="form-select" id="extra_status" required>
+                    <option value="complete">مكتمل</option>
+                    <option value="not_completed">غير مكتمل</option>
+                    <option value="legal_review">مراجعة قانونية</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">حفظ</button>
+              <button type="button" class="btn btn-secondary" onclick="resetExtraForm()">إلغاء</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="card mt-4">
+          <div class="card-body">
+            <h3 class="card-title">قائمة الإضافات</h3>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>اسم المستأجر</th>
+                  <th>المرحلة</th>
+                  <th>الدور</th>
+                  <th>رقم المحل</th>
+                  <th>الإيجار</th>
+                  <th>النوع</th>
+                  <th>الحالة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="extrasBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- JavaScript -->
+  <script>
+    // Show alert
+    function showAlert(message, type = 'success') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+      alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      document.getElementById('alerts').appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    // Load tenants
+    async function loadTenants() {
+      try {
+        const response = await fetch('/api/tenants');
+        const data = await response.json();
+        const tbody = document.getElementById('tenantsBody');
+        tbody.innerHTML = '';
+        data.tenants.forEach(tenant => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${tenant.name}</td>
+            <td>${tenant.phase}</td>
+            <td>${tenant.floor === 0 ? 'أرضي' : 'أول'}</td>
+            <td>${tenant.shop_number}</td>
+            <td>${tenant.rent_amount}</td>
+            <td>${tenant.status === 'complete' ? 'مكتمل' : tenant.status === 'not_completed' ? 'غير مكتمل' : 'مراجعة قانونية'}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="editTenant('${tenant.tenant_id}')">تعديل</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteTenant('${tenant.tenant_id}')">حذف</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        showAlert('خطأ في تحميل المستأجرين', 'danger');
+      }
+    }
+
+    // Load extras
+    async function loadExtras() {
+      try {
+        const response = await fetch('/api/extras');
+        const data = await response.json();
+        const tbody = document.getElementById('extrasBody');
+        tbody.innerHTML = '';
+        data.forEach(extra => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${extra.name}</td>
+            <td>${extra.phase}</td>
+            <td>${extra.floor === 0 ? 'أرضي' : 'أول'}</td>
+            <td>${extra.shop_number}</td>
+            <td>${extra.rent_amount}</td>
+            <td>${extra.type}</td>
+            <td>${extra.status === 'complete' ? 'مكتمل' : extra.status === 'not_completed' ? 'غير مكتمل' : 'مراجعة قانونية'}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" onclick="editExtra('${extra.extra_id}')">تعديل</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteExtra('${extra.extra_id}')">حذف</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        showAlert('خطأ في تحميل الإضافات', 'danger');
+      }
+    }
+
+    // Save tenant
+    document.getElementById('tenantForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const tenantData = {
+        tenant_id: document.getElementById('tenant_id').value || `T${Date.now()}`,
+        name: document.getElementById('name').value,
+        phase: parseInt(document.getElementById('phase').value),
+        floor: parseInt(document.getElementById('floor').value),
+        shop_number: document.getElementById('shop_number').value,
+        rent_amount: parseFloat(document.getElementById('rent_amount').value),
+        contract_advance: parseFloat(document.getElementById('contract_advance').value) || 0,
+        development_value: parseFloat(document.getElementById('development_value').value) || 0,
+        last_payment_date: document.getElementById('last_payment_date').value || null,
+        remaining_balance: parseFloat(document.getElementById('remaining_balance').value) || 0,
+        contract_start_date: document.getElementById('contract_start_date').value || null,
+        contract_end_date: document.getElementById('contract_end_date').value || null,
+        notes: document.getElementById('notes').value,
+        paid_amount: parseFloat(document.getElementById('paid_amount').value) || 0,
+        receipt_number: document.getElementById('receipt_number').value,
+        id_number: document.getElementById('id_number').value,
+        phone_number: document.getElementById('phone_number').value,
+        status: document.getElementById('status').value
+      };
+
+      const method = document.getElementById('tenant_id').value ? 'PUT' : 'POST';
+      const url = document.getElementById('tenant_id').value ? `/api/tenants/${tenantData.tenant_id}` : '/api/tenants';
+
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(tenantData)
+        });
+        if (response.ok) {
+          showAlert('تم حفظ المستأجر بنجاح!');
+          resetTenantForm();
+          loadTenants();
+        } else {
+          showAlert('خطأ أثناء حفظ المستأجر', 'danger');
+        }
+      } catch (error) {
+        showAlert('خطأ في الاتصال بالخادم', 'danger');
+      }
+    });
+
+    // Save extra
+    document.getElementById('extraForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const extraData = {
+        extra_id: document.getElementById('extra_id').value || `E${Date.now()}`,
+        tenant_id: `T${Date.now()}`, // يمكن تعديله لاختيار مستأجر موجود
+        name: document.getElementById('extra_name').value,
+        phase: parseInt(document.getElementById('extra_phase').value),
+        floor: parseInt(document.getElementById('extra_floor').value),
+        shop_number: document.getElementById('extra_shop_number').value,
+        rent_amount: parseFloat(document.getElementById('extra_rent_amount').value),
+        type: document.getElementById('extra_type').value,
+        last_payment_date: document.getElementById('extra_last_payment_date').value || null,
+        paid_amount: parseFloat(document.getElementById('extra_paid_amount').value) || 0,
+        receipt_number: document.getElementById('extra_receipt_number').value,
+        id_number: document.getElementById('extra_id_number').value,
+        phone_number: document.getElementById('extra_phone_number').value,
+        status: document.getElementById('extra_status').value
+      };
+
+      const method = document.getElementById('extra_id').value ? 'PUT' : 'POST';
+      const url = document.getElementById('extra_id').value ? `/api/extras/${extraData.extra_id}` : '/api/extras';
+
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(extraData)
+        });
+        if (response.ok) {
+          showAlert('تم حفظ الإضافة بنجاح!');
+          resetExtraForm();
+          loadExtras();
+        } else {
+          showAlert('خطأ أثناء حفظ الإضافة', 'danger');
+        }
+      } catch (error) {
+        showAlert('خطأ في الاتصال بالخادم', 'danger');
+      }
+    });
+
+    // Edit tenant
+    async function editTenant(tenantId) {
+      try {
+        const response = await fetch(`/api/tenants/${tenantId}`);
+        const tenant = await response.json();
+        document.getElementById('tenant_id').value = tenant.tenant_id;
+        document.getElementById('name').value = tenant.name;
+        document.getElementById('phase').value = tenant.phase;
+        document.getElementById('floor').value = tenant.floor;
+        document.getElementById('shop_number').value = tenant.shop_number;
+        document.getElementById('rent_amount').value = tenant.rent_amount;
+        document.getElementById('contract_advance').value = tenant.contract_advance;
+        document.getElementById('development_value').value = tenant.development_value;
+        document.getElementById('last_payment_date').value = tenant.last_payment_date || '';
+        document.getElementById('remaining_balance').value = tenant.remaining_balance;
+        document.getElementById('contract_start_date').value = tenant.contract_start_date || '';
+        document.getElementById('contract_end_date').value = tenant.contract_end_date || '';
+        document.getElementById('notes').value = tenant.notes;
+        document.getElementById('paid_amount').value = tenant.paid_amount;
+        document.getElementById('receipt_number').value = tenant.receipt_number;
+        document.getElementById('id_number').value = tenant.id_number;
+        document.getElementById('phone_number').value = tenant.phone_number;
+        document.getElementById('status').value = tenant.status;
+        document.querySelector('#tenants-tab').click();
+      } catch (error) {
+        showAlert('خطأ في تحميل بيانات المستأجر', 'danger');
+      }
+    }
+
+    // Edit extra
+    async function editExtra(extraId) {
+      try {
+        const response = await fetch(`/api/extras/${extraId}`);
+        const extra = await response.json();
+        document.getElementById('extra_id').value = extra.extra_id;
+        document.getElementById('extra_name').value = extra.name;
+        document.getElementById('extra_phase').value = extra.phase;
+        document.getElementById('extra_floor').value = extra.floor;
+        document.getElementById('extra_shop_number').value = extra.shop_number;
+        document.getElementById('extra_rent_amount').value = extra.rent_amount;
+        document.getElementById('extra_type').value = extra.type;
+        document.getElementById('extra_last_payment_date').value = extra.last_payment_date || '';
+        document.getElementById('extra_paid_amount').value = extra.paid_amount;
+        document.getElementById('extra_receipt_number').value = extra.receipt_number;
+        document.getElementById('extra_id_number').value = extra.id_number;
+        document.getElementById('extra_phone_number').value = extra.phone_number;
+        document.getElementById('extra_status').value = extra.status;
+        document.querySelector('#extras-tab').click();
+      } catch (error) {
+        showAlert('خطأ في تحميل بيانات الإضافة', 'danger');
+      }
+    }
+
+    // Delete tenant
+    async function deleteTenant(tenantId) {
+      if (confirm('هل أنت متأكد من حذف هذا المستأجر؟')) {
+        try {
+          const response = await fetch(`/api/tenants/${tenantId}`, { method: 'DELETE' });
+          if (response.ok) {
+            showAlert('تم حذف المستأجر بنجاح!');
+            loadTenants();
+          } else {
+            showAlert('خطأ أثناء حذف المستأجر', 'danger');
+          }
+        } catch (error) {
+          showAlert('خطأ في الاتصال بالخادم', 'danger');
+        }
+      }
+    }
+
+    // Delete extra
+    async function deleteExtra(extraId) {
+      if (confirm('هل أنت متأكد من حذف هذه الإضافة؟')) {
+        try {
+          const response = await fetch(`/api/extras/${extraId}`, { method: 'DELETE' });
+          if (response.ok) {
+            showAlert('تم حذف الإضافة بنجاح!');
+            loadExtras();
+          } else {
+            showAlert('خطأ أثناء حذف الإضافة', 'danger');
+          }
+        } catch (error) {
+          showAlert('خطأ في الاتصال بالخادم', 'danger');
+        }
+      }
+    }
+
+    // Reset tenant form
+    function resetTenantForm() {
+      document.getElementById('tenantForm').reset();
+      document.getElementById('tenant_id').value = '';
+    }
+
+    // Reset extra form
+    function resetExtraForm() {
+      document.getElementById('extraForm').reset();
+      document.getElementById('extra_id').value = '';
+    }
+
+    // Initial load
+    loadTenants();
+    loadExtras();
+  </script>
+</body>
+</html>
